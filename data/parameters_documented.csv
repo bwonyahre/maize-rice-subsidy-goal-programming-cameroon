@@ -1,14 +1,14 @@
 region,crop,S_current_ha,Y0_baseline_t_per_ha,Y1_ceiling_t_per_ha,cost_fcfa_per_ha,source,confidence
-Adamawa,maize,67037,2.29,4.0,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from submitted manuscript
-Centre,maize,129938,1.77,4.0,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from submitted manuscript
-East,maize,87144,1.11,4.0,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from submitted manuscript
-Far North,maize,155002,2.06,3.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from submitted manuscript
-Littoral,maize,88900,2.37,3.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from submitted manuscript
-North,maize,211286,2.08,3.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from submitted manuscript
-Northwest,maize,56453,1.5,4.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from submitted manuscript
-West,maize,279217,1.4,4.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from submitted manuscript
-South,maize,53473,1.89,4.0,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from submitted manuscript
-Southwest,maize,41492,1.5,3.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from submitted manuscript
+Adamawa,maize,67037,2.29,4.0,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
+Centre,maize,129938,1.77,4.0,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
+East,maize,87144,1.11,4.0,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
+Far North,maize,155002,2.06,3.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
+Littoral,maize,88900,2.37,3.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
+North,maize,211286,2.08,3.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
+Northwest,maize,56453,1.5,4.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
+West,maize,279217,1.4,4.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
+South,maize,53473,1.89,4.0,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
+Southwest,maize,41492,1.5,3.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
 Adamawa,rice,2262,2.24,3.75,195143,"RECONSTRUCTED: national 2020 baseline backed out from Aug-2026 estimate (-7.77%/yr x6), minus irrigated production, allocated by maize-area share (see module docstring)","LOW - reconstructed, not an AGRISTAT figure"
 Centre,rice,8848,1.11,3.75,195143,"RECONSTRUCTED: national 2020 baseline backed out from Aug-2026 estimate (-7.77%/yr x6), minus irrigated production, allocated by maize-area share (see module docstring)","LOW - reconstructed, not an AGRISTAT figure"
 East,rice,6043,1.09,3.75,195143,"RECONSTRUCTED: national 2020 baseline backed out from Aug-2026 estimate (-7.77%/yr x6), minus irrigated production, allocated by maize-area share (see module docstring)","LOW - reconstructed, not an AGRISTAT figure"

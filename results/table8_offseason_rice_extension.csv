@@ -1,0 +1,8 @@
+scenario,beta,baseline_budget_bn,baseline_shortfall_m_t,baseline_shortfall_r_t,offseason_budget_bn,offseason_shortfall_m_t,offseason_shortfall_r_t,offseason_area_far_north_ha,offseason_area_north_ha
+80% maize / 90% rice,0.5,303.91,0,0,302.23,0,0,1619,40321
+80% maize / 100% rice,0.5,308.18,0,0,304.75,0,0,1619,40321
+80% maize / 100% rice,0.4,357.95,0,0,351.98,0,0,1619,40321
+80% maize / 100% rice,0.35,383.92,29841,0,380.36,9706,0,1619,40321
+80% maize / 100% rice,0.3,369.35,285702,0,365.8,265567,0,1619,40321
+100% maize / 100% rice (official),0.5,427.6,862256,0,424.05,842121,0,1619,40321
+100% maize / 100% rice (official),1.0,362.63,0,0,362.63,0,0,0,0

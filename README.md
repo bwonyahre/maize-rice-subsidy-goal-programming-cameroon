@@ -4,32 +4,33 @@
 for Maize and Rice in Cameroon: A Goal-Programming Approach in Support of the SND30**
 B. BWO'NYAHRE BAIDI, Y. KOUAKEP TCHAPTCHIE — *Discover Applied Mathematics* (major revision)
 
-This package replaces the "available upon request" Data Availability Statement of the
-submitted version with a complete, runnable, self-contained set of code, data and
-results (reviewer point 10).
+This package provides a complete, runnable, self-contained set of code, data and
+results (supplementary material).
 
 ## Contents
 
 ```
 code/
-  goal_programming_model.py   core genuine goal-programming model (reviewer point 1)
-  run_scenarios.py            generates every result table used in the revised manuscript
+  goal_programming_model.py   core genuine goal-programming model (Section 4.2)
+  run_scenarios.py            generates every result table used in the manuscript
 data/
   parameters_documented.csv   every model parameter, by region/crop, WITH its source and
-                               a confidence flag (reviewer point 6)
+                               a confidence flag (Table 2, Section 4)
   table2_rice_cost_buildup.md line-item reconstruction of the rice input cost table,
-                               with the JICA source value for each line (reviewer point 6)
+                               with the JICA source value for each line (Table 2, Section 4)
 results/
-  table1_target_scenario_matrix.csv          reviewer point 3 (scenario matrix incl. 100/100)
-  table2_adoption_sensitivity_gp.csv         reviewer point 4 (adoption uncertainty, explicit
+  table1_target_scenario_matrix.csv          Table 8, Sec. 5.8 (scenario matrix incl. 100/100)
+  table2_adoption_sensitivity_gp.csv         Table 12, Sec. 6.6 (adoption, explicit
                                               shortfalls instead of bare "infeasible")
-  table3_land_assumption_robustness.csv      reviewer point 5 (shared vs separate land,
+  table3_land_assumption_robustness.csv      Table 9, Sec. 5.9 (shared vs separate land,
                                               extension cost premium)
-  table4_budget_definition_partial_financing.csv   reviewer point 7
-  table5_dual_value_robustness.csv           reviewer point 8
+  table4_budget_definition_partial_financing.csv   Table 10, Sec. 6.3
+  table5_dual_value_robustness.csv           Table 7, Sec. 5.5
   table6_central_allocation_and_duals.csv    central scenario detail, with data-source flag
                                               per region
-  table7_rice_cost_buildup.csv               reviewer point 6
+  table7_rice_cost_buildup.csv               Table 2
+  table8_offseason_rice_extension.csv        Table 11, Sec. 6.4 (optional counter-season rice,
+                                              Far North and North; solve_goal_program(offseason=True))
 ```
 
 ## How to reproduce
@@ -44,12 +45,10 @@ Requires Python >= 3.9, scipy >= 1.10 (HiGHS solver). No external data download 
 required: all inputs are hard-coded in `goal_programming_model.py` with inline source
 citations, so the computation is fully self-contained and deterministic.
 
-## What changed from the submitted version (methodology)
+## Methodology: genuine goal programming
 
-The submitted manuscript solved a minimum-cost LP under hard "achieved production >=
-target" constraints and described it as "equivalent to a single-priority goal program."
-Reviewer 1 correctly noted this is a relabeled LP, not a genuine goal program. This
-package implements an authentic **two-stage lexicographic goal program**:
+A minimum-cost LP under hard "achieved production >= target" constraints is not a goal
+program. This package implements an authentic **two-stage lexicographic goal program**:
 
 - **Stage 1 (Priority 1):** minimize the weighted shortfall against the two production
   targets, using explicit non-negative deviation variables `d_m^-, d_m^+, d_r^-, d_r^+`.
@@ -58,12 +57,12 @@ package implements an authentic **two-stage lexicographic goal program**:
 
 Unlike the hard-constraint LP, this formulation never simply returns "infeasible": when
 land or budget is too tight, it reports the exact shortfall in tonnes for each crop,
-which is used directly in the scenario tables above (reviewer points 3, 4, 5).
+which is used directly in the scenario tables above (Sections 5.8, 5.9, 6.6).
 
 ## Data honesty note (important — read before citing table6)
 
 Current rice area (`S_i,r`) for the **three irrigated regions** (Far North, North,
-Northwest) is recovered from the submitted manuscript's own published optimal solution,
+Northwest) is recovered from the manuscript's own published optimal solution,
 where the text states the optimal rice intensification area equals "all or nearly all"
 of the current area — so these three values are an exact reconstruction, not a guess.
 
@@ -74,7 +73,7 @@ transparent estimate** (see the docstring of `goal_programming_model.py`, functi
 derivation for `S_r_rainfed`), built from (a) the manuscript's own national rice
 production trajectory, (b) subtraction of the (exact) irrigated-region production, and
 (c) a proportional allocation to the 7 rainfed regions using their current maize area as
-a structural proxy. **This is flagged explicitly in the revised manuscript as a
+a structural proxy. **This is flagged explicitly in the manuscript as a
 limitation and is not presented as an AGRISTAT figure.** Because rice extension is zero
 in all seven rainfed regions at every tested optimum (the land and cost structure makes
 rainfed-rice extension unattractive relative to maize or irrigated rice), this

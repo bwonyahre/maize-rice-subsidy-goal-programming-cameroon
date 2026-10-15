@@ -8,10 +8,10 @@ Reproducibility code for the major revision of:
 for Maize and Rice in Cameroon: A Goal-Programming Approach in Support of the SND30"
 BWO'NYAHRE BAIDI B., KOUAKEP TCHAPTCHIE Y. -- submitted to Discover Applied Mathematics.
 
-WHAT CHANGED RELATIVE TO THE ORIGINAL SUBMISSION (reviewer point 1)
----------------------------------------------------------------------
-The original submission solved a minimum-cost LP under hard "target >= T" constraints
-and *labeled* it a goal program. This script implements a GENUINE goal program:
+MODEL FORMULATION
+-----------------
+A minimum-cost LP under hard "target >= T" constraints is not a goal program. This script
+implements a GENUINE goal program:
 production targets and the budget ceiling are formulated as GOALS fitted with explicit
 non-negative deviation variables (shortfall d-, overshoot d+), and the program is solved
 as a two-stage LEXICOGRAPHIC goal program:
@@ -22,18 +22,18 @@ as a two-stage LEXICOGRAPHIC goal program:
              optimal (minimal) shortfall, minimize total subsidy cost (equivalently,
              minimize budget overshoot d_B^+ against an aspiration budget).
 
-This has a concrete advantage over the hard-constraint LP used in the original
-submission: when land is too tight to reach both targets (e.g. beta <= 0.25), the
+This has a concrete advantage over the hard-constraint LP used in a plain
+cost-minimization LP: when land is too tight to reach both targets (e.g. beta <= 0.25), the
 hard-constraint LP simply reports "infeasible" with no further information. The genuine
 GP instead reports *exactly how far short* each crop falls -- directly useful for
-reviewer points 3, 4 and 5 (scenario analysis, conditional framing, land assumptions).
+the scenario analyses (targets, adoption, land assumptions).
 
 DATA PROVENANCE
 ----------------
 All parameters are listed in data/parameters_documented.csv with an explicit SOURCE
 and CONFIDENCE field. Two blocks of parameters have different evidentiary status:
   - Maize yields/costs/areas and rice yields/costs for the 3 irrigated regions: taken
-    verbatim from the submitted manuscript's own tables (Tables 1, 2, 4, 5), which in
+    verbatim from the manuscript's own tables (Tables 1, 2, 4, 5), which in
     turn cite AGRISTAT 2022, INS regional yearbooks and the JICA/MINADER (2021)
     rice competitiveness study.
   - Current rice area (S_i,r) for the 7 RAINFED regions: RECONSTRUCTED (not an
@@ -47,8 +47,8 @@ and CONFIDENCE field. Two blocks of parameters have different evidentiary status
     current MAIZE area (S_i,m) as a structural proxy for general cropping intensity.
     This is a coarse, explicitly flagged estimate, NOT a disaggregated AGRISTAT figure;
     it is used only to populate scenarios that were not already pinned down by the
-    original submission's own published numbers. See Section 4.4 and Limitation L1 in
-    the revised manuscript.
+    manuscript's own published numbers. See Limitation 4 in
+    the manuscript.
 
 Dependencies: numpy, scipy, pandas (pip install numpy scipy pandas --break-system-packages)
 """
@@ -68,7 +68,7 @@ REGIONS = ["Adamawa", "Centre", "East", "Far North", "Littoral",
 IRRIGATED = {"Far North", "North", "Northwest"}
 RAINFED = [r for r in REGIONS if r not in IRRIGATED]
 
-# --- Maize parameters (verbatim from submitted manuscript Tables 1-2; AGRISTAT 2022) ---
+# --- Maize parameters (verbatim from the manuscript Tables 1-2; AGRISTAT 2022) ---
 S_m = {  # current maize area, ha (AGRISTAT 2020)
     "Adamawa": 67037, "Centre": 129938, "East": 87144, "Far North": 155002,
     "Littoral": 88900, "North": 211286, "Northwest": 56453, "West": 279217,
@@ -96,14 +96,14 @@ Y1_r = {r: (6.5 if r in IRRIGATED else 3.75) for r in REGIONS}
 COST_r = {r: (135_500 if r in IRRIGATED else 195_143) for r in REGIONS}
 
 # Rice input cost line items (Table 2 of manuscript), reproduced here for full
-# traceability (reviewer point 6) -- see data/table2_rice_cost_buildup.csv
+# traceability -- see data/table2_rice_cost_buildup.csv
 RICE_COST_LINE_ITEMS = {
     "rainfed":  {"seed": 107_143, "npk": 60_000, "urea": 28_000, "herbicide_nursery": 0},
     "irrigated": {"seed": 12_500, "npk": 68_000, "urea": 36_000, "herbicide_nursery": 19_000},
 }
 
 # --- Current rice area S_i,r ---------------------------------------------------
-# Irrigated regions: RECOVERED from the submitted manuscript's own optimal solution
+# Irrigated regions: RECOVERED from the manuscript's own optimal solution
 # (Table "allocation_bicrop"), where x_i,r is reported to equal "all or nearly all"
 # of S_i,r. Treated as an exact reconstruction, not an estimate.
 S_r_irrigated = {"Far North": 1_619, "North": 40_321, "Northwest": 41_639}
@@ -127,6 +127,12 @@ for r in RAINFED:
     S_r_rainfed[r] = prod_r / Y0_r[r]
 
 S_r = {**S_r_irrigated, **S_r_rainfed}
+
+# --- Off-season (contre-saison) rice: OPTIONAL extension, never part of the baseline ---
+# Only the SEMRY (Far North) and Lagdo (North) schemes; UNVDA (Northwest) has a single cycle.
+OFFSEASON_REGIONS = ["Far North", "North"]
+OFFSEASON_YIELD_RATIO = 0.65   # second-crop yield as a share of the main-season ceiling yield
+OFFSEASON_COST = 135_500       # FCFA/ha, same as the irrigated package (no new infrastructure)
 
 # --- Targets ---------------------------------------------------------------------
 SND30_TARGET_m = 8_000_000.0   # t, official SND30 2030 target
@@ -176,13 +182,14 @@ def _var_index(n):
     idx["d_m_plus"] = 4 * n + 1
     idx["d_r_minus"] = 4 * n + 2
     idx["d_r_plus"] = 4 * n + 3
-    idx["n_vars"] = 4 * n + 4
+    idx["cs"] = list(range(4 * n + 4, 4 * n + 4 + len(OFFSEASON_REGIONS)))
+    idx["n_vars"] = 4 * n + 4 + len(OFFSEASON_REGIONS)
     return idx
 
 
 def _build_constraints(T_m, T_r, beta, land_mode="shared", beta_r=None,
                         adoption_m=1.0, adoption_r=1.0, ext_cost_multiplier_m=1.0,
-                        ext_cost_multiplier_r=1.0):
+                        ext_cost_multiplier_r=1.0, offseason=False):
     """Builds A_eq, b_eq, A_ub, b_ub, bounds for the goal-program constraint set
     (everything except the objective, which differs by stage)."""
     n = len(REGIONS)
@@ -205,6 +212,9 @@ def _build_constraints(T_m, T_r, beta, land_mode="shared", beta_r=None,
     for j, r in enumerate(REGIONS):
         row_r[idx["x_r"][j]] = adoption_r * (Y1_r[r] - Y0_r[r])
         row_r[idx["e_r"][j]] = adoption_r * Y1_r[r]
+    if offseason:
+        for k, rname in enumerate(OFFSEASON_REGIONS):
+            row_r[idx["cs"][k]] = adoption_r * OFFSEASON_YIELD_RATIO * Y1_r[rname]
     row_r[idx["d_r_minus"]] = 1.0
     row_r[idx["d_r_plus"]] = -1.0
     base_r = sum(Y0_r[r] * S_r[r] for r in REGIONS)
@@ -228,6 +238,16 @@ def _build_constraints(T_m, T_r, beta, land_mode="shared", beta_r=None,
     else:
         raise ValueError("land_mode must be 'shared' or 'separate'")
 
+    # off-season cropping is bounded by the irrigated area cultivated in the main season (S + e)
+    if offseason:
+        for k, rname in enumerate(OFFSEASON_REGIONS):
+            j = REGIONS.index(rname)
+            row = np.zeros(nvar)
+            row[idx["cs"][k]] = 1.0
+            row[idx["e_r"][j]] = -1.0
+            # cs_i <= S_i,r + e_i,r : cultivated irrigated area in the main season
+            A_ub.append(row); b_ub.append(S_r[rname])
+
     # --- bounds ---
     bounds = [None] * nvar
     for j, r in enumerate(REGIONS):
@@ -239,6 +259,8 @@ def _build_constraints(T_m, T_r, beta, land_mode="shared", beta_r=None,
     bounds[idx["d_m_plus"]] = (0, None)
     bounds[idx["d_r_minus"]] = (0, None)
     bounds[idx["d_r_plus"]] = (0, None)
+    for k in range(len(OFFSEASON_REGIONS)):
+        bounds[idx["cs"][k]] = (0, None) if offseason else (0, 0)
 
     cost_vec = np.zeros(nvar)
     for j, r in enumerate(REGIONS):
@@ -246,19 +268,21 @@ def _build_constraints(T_m, T_r, beta, land_mode="shared", beta_r=None,
         cost_vec[idx["e_m"][j]] = COST_m * ext_cost_multiplier_m
         cost_vec[idx["x_r"][j]] = COST_r[r]
         cost_vec[idx["e_r"][j]] = COST_r[r] * ext_cost_multiplier_r
+    for k in range(len(OFFSEASON_REGIONS)):
+        cost_vec[idx["cs"][k]] = OFFSEASON_COST
 
     return idx, np.array(A_eq), np.array(b_eq), np.array(A_ub), np.array(b_ub), bounds, cost_vec
 
 
 def solve_goal_program(T_m, T_r, beta, w_m=1.0, w_r=1.0, land_mode="shared", beta_r=None,
                         adoption_m=1.0, adoption_r=1.0, ext_cost_multiplier_m=1.0,
-                        ext_cost_multiplier_r=1.0):
+                        ext_cost_multiplier_r=1.0, offseason=False):
     """Two-stage lexicographic goal program. Returns a result dict with both stages,
     the achieved production, shortfalls, minimum cost and dual values."""
     n = len(REGIONS)
     idx, A_eq, b_eq, A_ub, b_ub, bounds, cost_vec = _build_constraints(
         T_m, T_r, beta, land_mode, beta_r, adoption_m, adoption_r,
-        ext_cost_multiplier_m, ext_cost_multiplier_r)
+        ext_cost_multiplier_m, ext_cost_multiplier_r, offseason)
     nvar = idx["n_vars"]
 
     # --- Stage 1: minimize weighted shortfall (priority 1) ---
@@ -293,6 +317,8 @@ def solve_goal_program(T_m, T_r, beta, w_m=1.0, w_r=1.0, land_mode="shared", bet
 
     prod_m = sum(production(r, "m", x_m[r], e_m[r], adoption_m, Y1_m[r]) for r in REGIONS)
     prod_r = sum(production(r, "r", x_r[r], e_r[r], adoption_r, Y1_r[r]) for r in REGIONS)
+    cs = dict(zip(OFFSEASON_REGIONS, x[idx["cs"]]))
+    prod_r += sum(adoption_r * OFFSEASON_YIELD_RATIO * Y1_r[r] * cs[r] for r in OFFSEASON_REGIONS)
     total_cost = res2.fun
 
     out = {
@@ -313,7 +339,7 @@ def solve_goal_program(T_m, T_r, beta, w_m=1.0, w_r=1.0, land_mode="shared", bet
         "overshoot_r_t": d_r_plus,
         "pct_target_m": 100 * prod_m / T_m if T_m else None,
         "pct_target_r": 100 * prod_r / T_r if T_r else None,
-        "x_m": x_m, "e_m": e_m, "x_r": x_r, "e_r": e_r,
+        "x_m": x_m, "e_m": e_m, "x_r": x_r, "e_r": e_r, "cs": cs, "offseason": offseason,
         "beta": beta, "land_mode": land_mode,
         "adoption_m": adoption_m, "adoption_r": adoption_r,
         "raw_stage2": res2,

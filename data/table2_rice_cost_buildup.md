@@ -1,4 +1,4 @@
-# Rice input cost table — full reconstruction (reviewer point 6)
+# Rice input cost table — full reconstruction
 
 Source for every line item: Task-force Riz, MINADER/JICA, *Analyse de la compétitivité
 de la filière riz au Cameroun* (2021), field-data cost tables for the rainfed and
@@ -18,7 +18,7 @@ excludes labor).
 
 ## Why the seed cost differs by a factor of ~8.6 between systems
 
-This gap (107,143 vs 12,500 FCFA/ha) was flagged by the reviewer as needing explicit
+This gap (107,143 vs 12,500 FCFA/ha) needs explicit
 justification, not just a number. It reflects two *structurally different seed
 economies* in the JICA source, not a data error:
 
@@ -39,7 +39,7 @@ economies* in the JICA source, not a data error:
 
 This explanation is drawn from the JICA study's own system descriptions; it is **not**
 independently re-verified against primary field data by the present authors, and the
-revised manuscript states this explicitly as a limitation: the line-item gap is
+manuscript states this explicitly as a limitation: the line-item gap is
 internally consistent with the JICA source's stated system differences, but a
 region-specific validation (e.g., direct interviews with SEMRY/UNVDA input-supply
 offices) was outside the scope of this study.

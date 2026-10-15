@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Runs the full scenario suite for the major revision and writes CSV result tables to
-../results/. Each table maps directly to one reviewer point (noted in comments).
+../results/. Each table maps to a manuscript table (noted in comments).
 
 Run: python3 -I run_scenarios.py
 """
@@ -21,7 +21,7 @@ def fmt_bn(fcfa):
 
 
 # ---------------------------------------------------------------------------------
-# TABLE 1 -- Reviewer point 3: target-scenario matrix (80/90 vs official 100/100 vs
+# TABLE 1 -- target-scenario matrix (80/90 vs official 100/100 vs
 # intermediate combinations), beta=0.5, full adoption.
 # ---------------------------------------------------------------------------------
 rows = []
@@ -51,7 +51,7 @@ print(df1.to_string(index=False))
 print()
 
 # ---------------------------------------------------------------------------------
-# TABLE 2 -- Reviewer point 4: adoption-rate uncertainty, now reported for the GOAL
+# TABLE 2 -- adoption-rate uncertainty, now reported for the GOAL
 # PROGRAM (explicit shortfalls instead of bare "infeasible"), beta=0.5, 80/90 targets.
 # This becomes part of the MAIN results, not a secondary subsection.
 # ---------------------------------------------------------------------------------
@@ -73,8 +73,8 @@ print(df2.to_string(index=False))
 print()
 
 # ---------------------------------------------------------------------------------
-# TABLE 3 -- Reviewer point 5: alternative land assumptions.
-#   (a) shared land (as submitted) vs (b) separate land pools per crop
+# TABLE 3 -- alternative land assumptions.
+#   (a) shared land  vs (b) separate land pools per crop
 #   (c) extension cost premium over intensification (defection from "same cost" assumption)
 # ---------------------------------------------------------------------------------
 rows = []
@@ -104,7 +104,7 @@ print(df3.to_string(index=False))
 print()
 
 # ---------------------------------------------------------------------------------
-# TABLE 4 -- Reviewer point 7: what does the budget figure represent? Partial
+# TABLE 4 -- what does the budget figure represent? Partial
 # government financing scenarios (government covers only a share of input cost;
 # producer/cooperative covers the rest). Central scenario, beta=0.5, full adoption.
 # ---------------------------------------------------------------------------------
@@ -126,7 +126,7 @@ print(df4.to_string(index=False))
 print()
 
 # ---------------------------------------------------------------------------------
-# TABLE 5 -- Reviewer point 8: dual-value (shadow price) robustness check. Report the
+# TABLE 5 -- dual-value (shadow price) robustness check. Report the
 # marginal cost ratio maize/rice across several scenarios, not just the single central one.
 # ---------------------------------------------------------------------------------
 rows = []
@@ -155,7 +155,7 @@ print()
 
 # ---------------------------------------------------------------------------------
 # TABLE 6 -- Central allocation detail + regional land dual values (replaces the
-# submitted manuscript's Table "allocation_bicrop" and "duales_bicrop", under the
+# manuscript's Table "allocation_bicrop" and "duales_bicrop", under the
 # genuine-GP formulation).
 # ---------------------------------------------------------------------------------
 res_central = solve_goal_program(0.80 * SND30_TARGET_m, 0.90 * SND30_TARGET_r, beta=0.5)
@@ -180,7 +180,7 @@ print()
 print(f"CENTRAL SCENARIO TOTAL BUDGET: {fmt_bn(res_central['total_cost_fcfa'])} Bn FCFA")
 
 # ---------------------------------------------------------------------------------
-# TABLE 7 -- Table 2 reproducibility: full rice cost line-item buildup (reviewer point 6)
+# TABLE 7 -- Table 2 reproducibility: full rice cost line-item buildup
 # ---------------------------------------------------------------------------------
 rows = []
 for system, items in RICE_COST_LINE_ITEMS.items():
@@ -190,3 +190,35 @@ for system, items in RICE_COST_LINE_ITEMS.items():
 df7 = pd.DataFrame(rows)
 df7.to_csv(os.path.join(OUT, "table7_rice_cost_buildup.csv"), index=False)
 print(df7.to_string(index=False))
+
+# ---------------------------------------------------------------------------------
+# TABLE 8 -- Off-season (contre-saison) rice as an OPTIONAL extension, never baseline.
+# Compared with the baseline at identical targets; low-beta regime where land binds.
+# ---------------------------------------------------------------------------------
+rows = []
+for label, fm, fr, beta in [
+    ("80% maize / 90% rice", 0.80, 0.90, 0.50),
+    ("80% maize / 100% rice", 0.80, 1.00, 0.50),
+    ("80% maize / 100% rice", 0.80, 1.00, 0.40),
+    ("80% maize / 100% rice", 0.80, 1.00, 0.35),
+    ("80% maize / 100% rice", 0.80, 1.00, 0.30),
+    ("100% maize / 100% rice (official)", 1.00, 1.00, 0.50),
+    ("100% maize / 100% rice (official)", 1.00, 1.00, 1.00),
+]:
+    Tm, Tr = fm * SND30_TARGET_m, fr * SND30_TARGET_r
+    a = solve_goal_program(Tm, Tr, beta)
+    b = solve_goal_program(Tm, Tr, beta, offseason=True)
+    rows.append({
+        "scenario": label, "beta": beta,
+        "baseline_budget_bn": fmt_bn(a["total_cost_fcfa"]),
+        "baseline_shortfall_m_t": round(a["shortfall_m_t"]),
+        "baseline_shortfall_r_t": round(a["shortfall_r_t"]),
+        "offseason_budget_bn": fmt_bn(b["total_cost_fcfa"]),
+        "offseason_shortfall_m_t": round(b["shortfall_m_t"]),
+        "offseason_shortfall_r_t": round(b["shortfall_r_t"]),
+        "offseason_area_far_north_ha": round(b["cs"]["Far North"]),
+        "offseason_area_north_ha": round(b["cs"]["North"]),
+    })
+df8 = pd.DataFrame(rows)
+df8.to_csv(os.path.join(OUT, "table8_offseason_rice_extension.csv"), index=False)
+print(df8.to_string(index=False))
