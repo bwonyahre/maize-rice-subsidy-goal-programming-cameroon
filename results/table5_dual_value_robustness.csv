@@ -1,0 +1,5 @@
+scenario,shortfall_m_t,shortfall_r_t,marginal_cost_maize_fcfa_per_t,marginal_cost_rice_fcfa_per_t,ratio_maize_over_rice
+"Central (80/90, beta=0.5)",0,0,-131140,-56960,2.3
+"Official targets (100/100, beta=0.5)",862256,0,-265363,-129234,2.05
+"Looser land (80/90, beta=0.75)",0,0,-72339,-25298,2.86
+"Tighter land (80/90, beta=0.25)",521429,0,-198451,-81310,2.44

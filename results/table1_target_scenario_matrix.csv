@@ -1,0 +1,6 @@
+scenario,target_maize_pct,target_rice_pct,target_maize_t,target_rice_t,achieved_maize_t,achieved_rice_t,shortfall_maize_t,shortfall_rice_t,min_budget_bn_fcfa,feasible_without_shortfall
+"80% maize / 90% rice (central, as in submitted version)",80.0,90.0,6400000.0,675000.0,6400000,675000,0,0,303.91,True
+80% maize / 100% rice,80.0,100.0,6400000.0,750000.0,6400000,750000,0,0,308.18,True
+90% maize / 90% rice,90.0,90.0,7200000.0,675000.0,7157879,675000,42121,0,424.89,False
+90% maize / 100% rice,90.0,100.0,7200000.0,750000.0,7137744,750000,62256,0,427.6,False
+100% maize / 100% rice (official SND30 targets),100.0,100.0,8000000.0,750000.0,7137744,750000,862256,0,427.6,False
