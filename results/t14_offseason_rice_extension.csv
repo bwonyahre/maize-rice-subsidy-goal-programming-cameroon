@@ -1,0 +1,7 @@
+targets,beta,baseline_budget_bn,baseline_shortfall_maize_t,baseline_shortfall_rice_t,offseason_budget_bn,offseason_shortfall_maize_t,offseason_shortfall_rice_t,offseason_area_ha
+80/90,0.5,368.7,0,0,364.09,0,0,13600
+80/100,0.5,377.59,0,0,372.51,0,0,13600
+80/100,0.35,420.43,163148,0,422.85,109518,0,13600
+100/100 (official),0.5,477.71,988906,0,480.13,935277,0,13600
+100/100 (official),0.75,521.48,0,0,515.43,0,0,13600
+100/100 (official),1.0,467.16,0,0,465.12,0,0,13600

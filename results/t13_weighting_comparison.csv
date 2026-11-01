@@ -1,0 +1,9 @@
+scenario,weights,shortfall_maize_t,shortfall_rice_t,maize_pct_of_target,rice_pct_of_target,budget_bn
+"beta 0.25, 80/90",tonnes (1 per t),609309,0,90.5,100.0,383.01
+"beta 0.25, 80/90",share of target (1/T),609309,0,90.5,100.0,383.01
+"official 100/100, beta 0.5",tonnes (1 per t),988906,0,87.6,100.0,477.71
+"official 100/100, beta 0.5",share of target (1/T),988906,0,87.6,100.0,477.71
+adoption 0.4,tonnes (1 per t),2571951,0,59.8,100.0,471.5
+adoption 0.4,share of target (1/T),2571951,0,59.8,100.0,471.5
+"severe stress: ceilings -50%, adoption 0.5",tonnes (1 per t),3700807,165416,42.2,75.5,349.0
+"severe stress: ceilings -50%, adoption 0.5",share of target (1/T),3877250,0,39.4,100.0,342.32

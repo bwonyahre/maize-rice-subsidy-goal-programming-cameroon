@@ -1,0 +1,14 @@
+statistic,value
+share of draws where both central targets are attainable at all (any budget),0.145
+share of draws where both targets are met at the central budget B,0.006
+"budget needed (bn), quantiles 5/25/50/75/95, draws where attainable","[372.5, 435.3, 475.4, 526.2, 593.4]"
+"maize % of target attained at B, quantiles 5/25/50/75/95","[55.8, 63.6, 70.2, 79.4, 90.6]"
+"rice % of target attained at B, quantiles 5/25/50/75/95","[100.0, 100.0, 100.0, 100.0, 100.0]"
+central budget B (bn),368.7
+draws,512
+Spearman rank corr. of beta with maize % attained at B,0.36
+Spearman rank corr. of tau with maize % attained at B,0.82
+Spearman rank corr. of phi_add with maize % attained at B,0.14
+Spearman rank corr. of kappa with maize % attained at B,-0.22
+Spearman rank corr. of ceil_factor with maize % attained at B,0.22
+Spearman rank corr. of rho with maize % attained at B,0.16

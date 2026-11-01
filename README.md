@@ -1,89 +1,37 @@
-# Reproducibility package
+# Joint maize / rice input-subsidy allocation in Cameroon: lexicographic goal program
 
-**Joint Optimization of Regional Allocation of Seed and Agricultural Input Subsidies
-for Maize and Rice in Cameroon: A Goal-Programming Approach in Support of the SND30**
-B. BWO'NYAHRE BAIDI, Y. KOUAKEP TCHAPTCHIE — *Discover Applied Mathematics* (major revision)
-
-This package provides a complete, runnable, self-contained set of code, data and
-results (supplementary material).
+Reproducibility package for *Joint Optimization of Regional Allocation of Seed and Agricultural Input
+Subsidies for Maize and Rice in Cameroon: A Goal-Programming Approach in Support of the SND30*
+(Bwo'nyahre Baidi B., Kouakep Tchaptchie Y.).
 
 ## Contents
-
 ```
-code/
-  goal_programming_model.py   core genuine goal-programming model (Section 4.2)
-  run_scenarios.py            generates every result table used in the manuscript
-data/
-  parameters_documented.csv   every model parameter, by region/crop, WITH its source and
-                               a confidence flag (Table 2, Section 4)
-  table2_rice_cost_buildup.md line-item reconstruction of the rice input cost table,
-                               with the JICA source value for each line (Table 2, Section 4)
-results/
-  table1_target_scenario_matrix.csv          Table 8, Sec. 5.8 (scenario matrix incl. 100/100)
-  table2_adoption_sensitivity_gp.csv         Table 12, Sec. 6.6 (adoption, explicit
-                                              shortfalls instead of bare "infeasible")
-  table3_land_assumption_robustness.csv      Table 9, Sec. 5.9 (shared vs separate land,
-                                              extension cost premium)
-  table4_budget_definition_partial_financing.csv   Table 10, Sec. 6.3
-  table5_dual_value_robustness.csv           Table 7, Sec. 5.5
-  table6_central_allocation_and_duals.csv    central scenario detail, with data-source flag
-                                              per region
-  table7_rice_cost_buildup.csv               Table 2
-  table8_offseason_rice_extension.csv        Table 11, Sec. 6.4 (optional counter-season rice,
-                                              Far North and North; solve_goal_program(offseason=True))
+code/goal_programming_model.py   model: three systems (maize, rainfed rice, irrigated rice), shared land,
+                                 extension premium, adoption, additionality, budget ceiling, off-season rice
+code/data_analysis.py            exploitation of the project data workbook (observed yields and area expansion)
+code/run_scenarios.py            regenerates every result table (results/t01 ... t18)
+code/make_figures.py             regenerates Figures 4-7 (figures/)
+data/projet_mais_cameroun_donnees.xlsx   project data workbook (regional maize panel 2007-2024, sources per row)
+data/parameters_documented.csv   every parameter with source and confidence flag
+data/table2_rice_cost_buildup.md rice input-cost line items and the seed-cost explanation
+results/                         output tables;  figures/  output figures
 ```
-
-## How to reproduce
-
+## Reproduce
 ```
-pip install numpy scipy pandas --break-system-packages
-cd code
-python3 goal_programming_model.py   # central scenario, sanity check
-python3 run_scenarios.py            # regenerates every CSV in ../results/
+pip install numpy scipy pandas openpyxl matplotlib --break-system-packages
+cd code && python3 run_scenarios.py && python3 make_figures.py
 ```
-Requires Python >= 3.9, scipy >= 1.10 (HiGHS solver). No external data download is
-required: all inputs are hard-coded in `goal_programming_model.py` with inline source
-citations, so the computation is fully self-contained and deterministic.
+Deterministic (HiGHS; the Monte-Carlo draws use a fixed-seed scrambled Sobol sequence).
 
-## Methodology: genuine goal programming
+## Model in one paragraph
+Stage 1 minimises the shortfall against the maize and rice targets, each measured as a share of its target;
+Stage 2 minimises cost among Stage-1-optimal solutions. Newly cultivated hectares cost (1+kappa) times the
+input package (central kappa = 0.30). With `budget=B` the same program maximises attainment under a ceiling B.
 
-A minimum-cost LP under hard "achieved production >= target" constraints is not a goal
-program. This package implements an authentic **two-stage lexicographic goal program**:
-
-- **Stage 1 (Priority 1):** minimize the weighted shortfall against the two production
-  targets, using explicit non-negative deviation variables `d_m^-, d_m^+, d_r^-, d_r^+`.
-- **Stage 2 (Priority 2):** among all solutions attaining the Stage-1-optimal shortfall,
-  minimize total subsidy cost.
-
-Unlike the hard-constraint LP, this formulation never simply returns "infeasible": when
-land or budget is too tight, it reports the exact shortfall in tonnes for each crop,
-which is used directly in the scenario tables above (Sections 5.8, 5.9, 6.6).
-
-## Data honesty note (important — read before citing table6)
-
-Current rice area (`S_i,r`) for the **three irrigated regions** (Far North, North,
-Northwest) is recovered from the manuscript's own published optimal solution,
-where the text states the optimal rice intensification area equals "all or nearly all"
-of the current area — so these three values are an exact reconstruction, not a guess.
-
-Current rice area for the **seven rainfed regions** could not be recovered: the original
-project's disaggregated AGRISTAT rice-by-region table was lost between work sessions and
-is not reproduced from an official source here. These seven values are a **documented,
-transparent estimate** (see the docstring of `goal_programming_model.py`, function
-derivation for `S_r_rainfed`), built from (a) the manuscript's own national rice
-production trajectory, (b) subtraction of the (exact) irrigated-region production, and
-(c) a proportional allocation to the 7 rainfed regions using their current maize area as
-a structural proxy. **This is flagged explicitly in the manuscript as a
-limitation and is not presented as an AGRISTAT figure.** Because rice extension is zero
-in all seven rainfed regions at every tested optimum (the land and cost structure makes
-rainfed-rice extension unattractive relative to maize or irrigated rice), this
-reconstruction does not affect the central published result, but it does enter the new
-land-sensitivity and alternative-scenario tables and should be refined with the original
-disaggregated source before any policy use beyond this article.
-
-## Citation of primary sources
-
-- DESA/MINADER. Annuaire statistique du MINADER (AGRISTAT), édition 2022.
-- Institut National de la Statistique du Cameroun (INS). Annuaires statistiques régionaux, 2019–2024.
-- Task-force Riz, MINADER/JICA. Analyse de la compétitivité de la filière riz au Cameroun. 2021.
-- République du Cameroun. Rapport d'évaluation à mi-parcours de la SND30. 2025.
+## Data honesty note
+* Maize areas, yields: AGRISTAT 2022 (verbatim). Ceiling yields and kappa: estimates, tested in sensitivity.
+* **Irrigated rice areas** (14,630 ha) are documented from public sources (SEMRY 2023; UNIDO ITPO 2021 profile).
+  The irrigated baseline yield (4.0 t/ha) is an assumption.
+* **Rainfed rice areas (about 125,200 ha) and the national 2020 rice base (215,101 t) are reconstructed**, not
+  measured: the regional AGRISTAT rice-area table was not available. Replace them if it is found.
+* The SND30 national maize series (1,985,330 t in 2020) differs from the AGRISTAT regional total (2,087,957 t).

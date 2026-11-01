@@ -1,21 +1,31 @@
-region,crop,S_current_ha,Y0_baseline_t_per_ha,Y1_ceiling_t_per_ha,cost_fcfa_per_ha,source,confidence
-Adamawa,maize,67037,2.29,4.0,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
-Centre,maize,129938,1.77,4.0,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
-East,maize,87144,1.11,4.0,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
-Far North,maize,155002,2.06,3.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
-Littoral,maize,88900,2.37,3.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
-North,maize,211286,2.08,3.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
-Northwest,maize,56453,1.5,4.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
-West,maize,279217,1.4,4.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
-South,maize,53473,1.89,4.0,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
-Southwest,maize,41492,1.5,3.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD agroecological zones 2019; manuscript Tables 1-2,high - verbatim from the manuscript
-Adamawa,rice,2262,2.24,3.75,195143,"RECONSTRUCTED: national 2020 baseline backed out from Aug-2026 estimate (-7.77%/yr x6), minus irrigated production, allocated by maize-area share (see module docstring)","LOW - reconstructed, not an AGRISTAT figure"
-Centre,rice,8848,1.11,3.75,195143,"RECONSTRUCTED: national 2020 baseline backed out from Aug-2026 estimate (-7.77%/yr x6), minus irrigated production, allocated by maize-area share (see module docstring)","LOW - reconstructed, not an AGRISTAT figure"
-East,rice,6043,1.09,3.75,195143,"RECONSTRUCTED: national 2020 baseline backed out from Aug-2026 estimate (-7.77%/yr x6), minus irrigated production, allocated by maize-area share (see module docstring)","LOW - reconstructed, not an AGRISTAT figure"
-Far North,rice,1619,3.02,6.5,135500,"Manuscript optimal solution (reverse-engineered: x_i,r reported as near-total S_i,r)",high
-Littoral,rice,6653,1.01,3.75,195143,"RECONSTRUCTED: national 2020 baseline backed out from Aug-2026 estimate (-7.77%/yr x6), minus irrigated production, allocated by maize-area share (see module docstring)","LOW - reconstructed, not an AGRISTAT figure"
-North,rice,40321,2.46,6.5,135500,"Manuscript optimal solution (reverse-engineered: x_i,r reported as near-total S_i,r)",high
-Northwest,rice,41639,1.31,6.5,135500,"Manuscript optimal solution (reverse-engineered: x_i,r reported as near-total S_i,r)",high
-West,rice,15632,1.35,3.75,195143,"RECONSTRUCTED: national 2020 baseline backed out from Aug-2026 estimate (-7.77%/yr x6), minus irrigated production, allocated by maize-area share (see module docstring)","LOW - reconstructed, not an AGRISTAT figure"
-South,rice,3085,1.31,3.75,195143,"RECONSTRUCTED: national 2020 baseline backed out from Aug-2026 estimate (-7.77%/yr x6), minus irrigated production, allocated by maize-area share (see module docstring)","LOW - reconstructed, not an AGRISTAT figure"
-Southwest,rice,2635,1.19,3.75,195143,"RECONSTRUCTED: national 2020 baseline backed out from Aug-2026 estimate (-7.77%/yr x6), minus irrigated production, allocated by maize-area share (see module docstring)","LOW - reconstructed, not an AGRISTAT figure"
+region,system,S_current_ha,Y0_baseline_t_per_ha,Y1_ceiling_t_per_ha,cost_fcfa_per_ha,source,confidence
+Adamawa,maize,67037,2.29,4.0,224250,AGRISTAT 2022 (DESA/MINADER); IRAD zones 2019,high - official; ceiling is an estimate
+Adamawa,rice rainfed,6271,2.24,3.75,195143,area RECONSTRUCTED from national 2020 base and maize-area proxy; yield AGRISTAT; cost/ceiling JICA/MINADER 2021,"low (area), medium (cost)"
+Adamawa,rice irrigated,0.0,,6.5,135500,"area: SEMRY 2023 press (12,500), UNIDO ITPO 2021 sector profile (UNVDA 1,530; Lagdo 600); baseline yield ASSUMED 4.0","medium (area), low (baseline yield)"
+Centre,maize,129938,1.77,4.0,224250,AGRISTAT 2022 (DESA/MINADER); IRAD zones 2019,high - official; ceiling is an estimate
+Centre,rice rainfed,24531,1.11,3.75,195143,area RECONSTRUCTED from national 2020 base and maize-area proxy; yield AGRISTAT; cost/ceiling JICA/MINADER 2021,"low (area), medium (cost)"
+Centre,rice irrigated,0.0,,6.5,135500,"area: SEMRY 2023 press (12,500), UNIDO ITPO 2021 sector profile (UNVDA 1,530; Lagdo 600); baseline yield ASSUMED 4.0","medium (area), low (baseline yield)"
+East,maize,87144,1.11,4.0,224250,AGRISTAT 2022 (DESA/MINADER); IRAD zones 2019,high - official; ceiling is an estimate
+East,rice rainfed,16754,1.09,3.75,195143,area RECONSTRUCTED from national 2020 base and maize-area proxy; yield AGRISTAT; cost/ceiling JICA/MINADER 2021,"low (area), medium (cost)"
+East,rice irrigated,0.0,,6.5,135500,"area: SEMRY 2023 press (12,500), UNIDO ITPO 2021 sector profile (UNVDA 1,530; Lagdo 600); baseline yield ASSUMED 4.0","medium (area), low (baseline yield)"
+Far North,maize,155002,2.06,3.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD zones 2019,high - official; ceiling is an estimate
+Far North,rice rainfed,0,3.02,3.75,195143,area RECONSTRUCTED from national 2020 base and maize-area proxy; yield AGRISTAT; cost/ceiling JICA/MINADER 2021,"low (area), medium (cost)"
+Far North,rice irrigated,12500,4.0,6.5,135500,"area: SEMRY 2023 press (12,500), UNIDO ITPO 2021 sector profile (UNVDA 1,530; Lagdo 600); baseline yield ASSUMED 4.0","medium (area), low (baseline yield)"
+Littoral,maize,88900,2.37,3.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD zones 2019,high - official; ceiling is an estimate
+Littoral,rice rainfed,18445,1.01,3.75,195143,area RECONSTRUCTED from national 2020 base and maize-area proxy; yield AGRISTAT; cost/ceiling JICA/MINADER 2021,"low (area), medium (cost)"
+Littoral,rice irrigated,0.0,,6.5,135500,"area: SEMRY 2023 press (12,500), UNIDO ITPO 2021 sector profile (UNVDA 1,530; Lagdo 600); baseline yield ASSUMED 4.0","medium (area), low (baseline yield)"
+North,maize,211286,2.08,3.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD zones 2019,high - official; ceiling is an estimate
+North,rice rainfed,0,2.46,3.75,195143,area RECONSTRUCTED from national 2020 base and maize-area proxy; yield AGRISTAT; cost/ceiling JICA/MINADER 2021,"low (area), medium (cost)"
+North,rice irrigated,600,4.0,6.5,135500,"area: SEMRY 2023 press (12,500), UNIDO ITPO 2021 sector profile (UNVDA 1,530; Lagdo 600); baseline yield ASSUMED 4.0","medium (area), low (baseline yield)"
+Northwest,maize,56453,1.5,4.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD zones 2019,high - official; ceiling is an estimate
+Northwest,rice rainfed,0,1.31,3.75,195143,area RECONSTRUCTED from national 2020 base and maize-area proxy; yield AGRISTAT; cost/ceiling JICA/MINADER 2021,"low (area), medium (cost)"
+Northwest,rice irrigated,1530,4.0,6.5,135500,"area: SEMRY 2023 press (12,500), UNIDO ITPO 2021 sector profile (UNVDA 1,530; Lagdo 600); baseline yield ASSUMED 4.0","medium (area), low (baseline yield)"
+West,maize,279217,1.4,4.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD zones 2019,high - official; ceiling is an estimate
+West,rice rainfed,43342,1.35,3.75,195143,area RECONSTRUCTED from national 2020 base and maize-area proxy; yield AGRISTAT; cost/ceiling JICA/MINADER 2021,"low (area), medium (cost)"
+West,rice irrigated,0.0,,6.5,135500,"area: SEMRY 2023 press (12,500), UNIDO ITPO 2021 sector profile (UNVDA 1,530; Lagdo 600); baseline yield ASSUMED 4.0","medium (area), low (baseline yield)"
+South,maize,53473,1.89,4.0,224250,AGRISTAT 2022 (DESA/MINADER); IRAD zones 2019,high - official; ceiling is an estimate
+South,rice rainfed,8554,1.31,3.75,195143,area RECONSTRUCTED from national 2020 base and maize-area proxy; yield AGRISTAT; cost/ceiling JICA/MINADER 2021,"low (area), medium (cost)"
+South,rice irrigated,0.0,,6.5,135500,"area: SEMRY 2023 press (12,500), UNIDO ITPO 2021 sector profile (UNVDA 1,530; Lagdo 600); baseline yield ASSUMED 4.0","medium (area), low (baseline yield)"
+Southwest,maize,41492,1.5,3.5,224250,AGRISTAT 2022 (DESA/MINADER); IRAD zones 2019,high - official; ceiling is an estimate
+Southwest,rice rainfed,7307,1.19,3.75,195143,area RECONSTRUCTED from national 2020 base and maize-area proxy; yield AGRISTAT; cost/ceiling JICA/MINADER 2021,"low (area), medium (cost)"
+Southwest,rice irrigated,0.0,,6.5,135500,"area: SEMRY 2023 press (12,500), UNIDO ITPO 2021 sector profile (UNVDA 1,530; Lagdo 600); baseline yield ASSUMED 4.0","medium (area), low (baseline yield)"

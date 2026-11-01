@@ -1,0 +1,9 @@
+variant,budget_bn,shortfall_maize_t,shortfall_rice_t,irrigated_extension_ha,rainfed_extension_ha
+irrigated extension: none,369.34,0,0,0,31963
+irrigated extension: developed-but-unexploited (central),368.7,0,0,2270,28028
+irrigated extension: full documented potential (capital NOT included),361.74,0,0,28600,0
+irrigated baseline yield 3.0 t/ha,364.62,0,0,2270,16566
+irrigated baseline yield 4.0 t/ha (central),368.7,0,0,2270,28028
+irrigated baseline yield 5.0 t/ha,373.1,0,0,2270,37201
+rice base from documented areas only (~100 kt),382.54,0,0,2270,55258
+all ceiling yields -15% (maize and rice),477.26,475570,0,2270,57267

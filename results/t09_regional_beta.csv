@@ -1,0 +1,5 @@
+beta_scenario,budget_bn,shortfall_maize_t,shortfall_rice_t,maize_pct_of_target
+uniform 0.50 (central),368.7,0,0,100.0
+"observed 6-year expansion (floor 0.05, cap 1.0)",378.35,0,0,100.0
+2 x observed (cap 1.0),334.78,0,0,100.0
+"observed, forest regions at least 0.5",358.45,0,0,100.0
