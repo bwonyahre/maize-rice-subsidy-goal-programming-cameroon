@@ -98,7 +98,9 @@ DEFAULTS = dict(
     kappa=0.30,          # extension cost premium
     tau=1.0,             # adoption rate
     phi_add=1.0,         # additionality of intensification (1 = no crowding-out)
-    rho=1.0,             # yield of extension land relative to the ceiling yield
+    rho=1.0,             # yield of extension land relative to the ceiling yield (all systems)
+    rho_m=None,          # overrides rho for maize only (None = use rho)
+    rho_r=None,          # overrides rho for rice only (None = use rho)
     ceil_factor=1.0,     # multiplier on every ceiling yield
     y0_irr=4.0,          # baseline yield of irrigated schemes (assumption)
     irr_ext="unexploited",
@@ -137,7 +139,10 @@ def _model(p):
     tau, phi, rho, kap = p["tau"], p["phi_add"], p["rho"], p["kappa"]
 
     gain_x = {s: {r: tau * phi * max(Y1[s][r] - Y0[s][r], 0.0) for r in REGIONS} for s in S}
-    gain_e = {s: {r: tau * rho * Y1[s][r] for r in REGIONS} for s in S}
+    rho_s = {"m": p["rho_m"] if p["rho_m"] is not None else rho,
+             "rf": p["rho_r"] if p["rho_r"] is not None else rho,
+             "ir": p["rho_r"] if p["rho_r"] is not None else rho}
+    gain_e = {s: {r: tau * rho_s[s] * Y1[s][r] for r in REGIONS} for s in S}
 
     A_eq, b_eq = [], []
     rm = np.zeros(n); rr = np.zeros(n)
@@ -244,6 +249,62 @@ def solve(**kw):
     if r2.eqlin is not None:
         out["dual_goal_m"], out["dual_goal_r"] = -r2.eqlin.marginals[0], -r2.eqlin.marginals[1]
     return out
+
+
+def solve_robust(shocks, mode="minmax", shock_rice=False, **kw):
+    """Climate-risk version. `shocks` is a (T, 10) array of yield multipliers theta[t, i] applied to the
+    production of region i in 'year' t (maize; rice too if shock_rice). The allocation is chosen once,
+    before the year is known. Stage 1 minimises the share-of-target shortfall of the WORST year
+    (mode="minmax") or of the AVERAGE year (mode="mean"); Stage 2 minimises cost at that level."""
+    p = {**DEFAULTS, **kw}
+    M = _model(p); idx = M["idx"]; n0 = M["n"]; T = len(shocks)
+    nv = n0 + 4 * T + 2                      # scenario deviations (m,r each: minus/plus) + Dm + Dr
+    pad = lambda v: np.concatenate([v, np.zeros(nv - len(v))])
+    S, Y0, gx, ge = M["S"], M["Y0"], M["gain_x"], M["gain_e"]
+    A_eq, b_eq = [], []
+    for t in range(T):
+        for crop in ("m", "r"):
+            row = np.zeros(nv); base = 0.0
+            systems = ("m",) if crop == "m" else ("rf", "ir")
+            for j, r in enumerate(REGIONS):
+                th = shocks[t][j] if (crop == "m" or shock_rice) else 1.0
+                for s_ in systems:
+                    row[idx[f"x_{s_}"][j]] = th * gx[s_][r]; row[idx[f"e_{s_}"][j]] = th * ge[s_][r]
+                    base += th * Y0[s_][r] * S[s_][r]
+            ci = n0 + 4 * t + (0 if crop == "m" else 2)
+            row[ci] = 1; row[ci + 1] = -1
+            A_eq.append(row); b_eq.append((p["T_m"] if crop == "m" else p["T_r"]) - base
+                                          - (p["base_shift_m"] if crop == "m" else p["base_shift_r"]))
+    iDm, iDr = n0 + 4 * T, n0 + 4 * T + 1
+    A_ub = [pad(r) for r in M["A_ub"]]; b_ub = list(M["b_ub"])
+    for t in range(T):
+        for crop, iD in (("m", iDm), ("r", iDr)):
+            row = np.zeros(nv); row[n0 + 4 * t + (0 if crop == "m" else 2)] = 1; row[iD] = -1
+            A_ub.append(row); b_ub.append(0.0)
+    cost = pad(M["cost"])
+    bounds = list(M["bounds"]) + [(0, None)] * (4 * T + 2)
+    for k in ("dm_minus", "dm_plus", "dr_minus", "dr_plus"):
+        bounds[idx[k]] = (0, 0)
+    w = np.zeros(nv)
+    wm, wr = (1e6 / p["T_m"], 1e6 / p["T_r"]) if p["normalize"] else (1.0, 1.0)
+    if mode == "minmax":
+        w[iDm], w[iDr] = wm, wr
+    else:
+        for t in range(T):
+            w[n0 + 4 * t] = wm / T; w[n0 + 4 * t + 2] = wr / T
+    Aub = np.array(A_ub); bub = np.array(b_ub)
+    if p["budget"] is not None:
+        Aub = np.vstack([Aub, cost]); bub = np.append(bub, p["budget"])
+    r1 = linprog(w, A_ub=Aub, b_ub=bub, A_eq=np.array(A_eq), b_eq=np.array(b_eq), bounds=bounds, method="highs")
+    if not r1.success: return {"success": False, "message": r1.message}
+    r2 = linprog(cost, A_ub=np.vstack([Aub, w]), b_ub=np.append(bub, r1.fun + 1e-6 + 1e-9 * abs(r1.fun)),
+                 A_eq=np.array(A_eq), b_eq=np.array(b_eq), bounds=bounds, method="highs")
+    z = r2.x
+    sm = [z[n0 + 4 * t] for t in range(T)]; sr = [z[n0 + 4 * t + 2] for t in range(T)]
+    return {"success": True, "total_cost_fcfa": r2.fun, "worst_shortfall_m_t": max(sm), "worst_shortfall_r_t": max(sr),
+            "shortfall_m_by_year": sm, "shortfall_r_by_year": sr,
+            "x_m": dict(zip(REGIONS, z[idx["x_m"]])), "e_m": dict(zip(REGIONS, z[idx["e_m"]])),
+            "x_rf": dict(zip(REGIONS, z[idx["x_rf"]])), "e_rf": dict(zip(REGIONS, z[idx["e_rf"]]))}
 
 
 def min_budget_bn(**kw):

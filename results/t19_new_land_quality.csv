@@ -1,0 +1,5 @@
+statistic,value
+"expansion episodes (consecutive years, area +2% or more)",23
+regions,9
+pooled marginal yield of new land / yield of existing land,0.64
+bootstrap 5% / 25% / 50% / 75% / 95% (resampling regions),"[np.float64(0.35), np.float64(0.5), np.float64(0.65), np.float64(0.83), np.float64(1.18)]"

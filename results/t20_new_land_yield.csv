@@ -1,0 +1,11 @@
+new_land_yield,beta,budget_bn,shortfall_maize_t,maize_pct_at_central_budget,maize_extension_ha
+"new land yields the ceiling (rho = 1, central)",0.5,368.7,0,100.0,624590
+"new land yields the ceiling (rho = 1, central)",1.0,330.28,0,100.0,772474
+rho = 0.85 (maize),0.5,425.49,0,94.2,624590
+rho = 0.85 (maize),1.0,373.28,0,99.3,852219
+"rho = 0.64 (maize, empirical pooled estimate)",0.5,478.46,212365,86.2,627115
+"rho = 0.64 (maize, empirical pooled estimate)",1.0,457.77,0,88.8,969043
+rho = 0.64 (maize and rice),0.5,477.84,249456,85.5,610557
+rho = 0.64 (maize and rice),1.0,465.01,0,87.8,969043
+"rho = 0.35 (maize, 5th percentile)",0.5,478.46,932096,78.1,627115
+"rho = 0.35 (maize, 5th percentile)",1.0,669.38,28815,78.4,1282003

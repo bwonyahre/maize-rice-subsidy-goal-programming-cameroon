@@ -128,7 +128,7 @@ save(pd.DataFrame({"region": g.REGIONS, "beta_observed": [round(b_obs[r], 3) for
 # ---- t10 joint sensitivity (Monte-Carlo, scrambled Sobol) -------------------------------------------
 N_DRAWS = 512
 names = ["beta", "tau", "phi_add", "kappa", "ceil_factor", "rho"]
-lo = np.array([.25, .5, .7, 0.0, .85, .8]); hi = np.array([1.0, 1.0, 1.0, .6, 1.0, 1.0])
+lo = np.array([.25, .5, .7, 0.0, .85, .6]); hi = np.array([1.0, 1.0, 1.0, .6, 1.0, 1.0])
 U = qmc.Sobol(d=len(names), scramble=True, seed=2026).random(N_DRAWS)
 D = lo + U * (hi - lo)
 recs = []
@@ -216,6 +216,72 @@ for lab, v in [("uniform 4.0 t/ha", 4.0), ("uniform 3.5 t/ha", 3.5)]:
     rows.append({"maize_ceiling": lab, "budget_bn": bn(r["total_cost_fcfa"]), "shortfall_maize_t": clean(r["shortfall_m_t"])})
 g.Y1_m.update(saved)
 save(pd.DataFrame(rows), "t18_maize_ceiling_uniform_vs_zones.csv")
+
+
+# ---- t19 evidence on the yield of newly cultivated land (project panel) ------------------------------
+dfp = data_analysis.load_panel()
+dfp = dfp[~((dfp.year == 2016) & ((dfp["yield"] - 1.74).abs() < 0.006))]   # flat 1.74 t/ha in 2016: imputed, excluded
+ep = []
+for reg, gg in dfp.groupby("region"):
+    gg = gg.sort_values("year"); a, pr, yr = gg.area.values, gg["prod"].values, gg.year.values
+    for i in range(len(gg) - 1):
+        if yr[i + 1] - yr[i] == 1 and a[i + 1] > a[i] * 1.02:
+            ep.append((reg, int(yr[i + 1]), a[i + 1] - a[i], pr[i + 1] - pr[i], pr[i] / a[i]))
+ep = pd.DataFrame(ep, columns=["region", "year", "dA", "dP", "y_old"])
+q_hat = ep.dP.sum() / (ep.dA * ep.y_old).sum()
+rng = np.random.default_rng(1); regs = ep.region.unique(); bs = []
+for _ in range(2000):
+    smp = pd.concat([ep[ep.region == k] for k in rng.choice(regs, len(regs))])
+    bs.append(smp.dP.sum() / (smp.dA * smp.y_old).sum())
+lo5, lo25, med, hi75, hi95 = np.percentile(bs, [5, 25, 50, 75, 95])
+save(pd.DataFrame([("expansion episodes (consecutive years, area +2% or more)", len(ep)), ("regions", len(regs)),
+                   ("pooled marginal yield of new land / yield of existing land", round(q_hat, 2)),
+                   ("bootstrap 5% / 25% / 50% / 75% / 95% (resampling regions)", [round(x, 2) for x in (lo5, lo25, med, hi75, hi95)])],
+                  columns=["statistic", "value"]), "t19_new_land_quality.csv")
+RHO_EMP = round(q_hat, 2)
+
+# ---- t20 new-land yield: sensitivity -----------------------------------------------------------------------
+rows = []
+for lab, kw in [("new land yields the ceiling (rho = 1, central)", {}), ("rho = 0.85 (maize)", dict(rho_m=.85)),
+                (f"rho = {RHO_EMP} (maize, empirical pooled estimate)", dict(rho_m=RHO_EMP)),
+                (f"rho = {RHO_EMP} (maize and rice)", dict(rho=RHO_EMP)),
+                ("rho = 0.35 (maize, 5th percentile)", dict(rho_m=0.35))]:
+    for beta in (0.5, 1.0):
+        r = g.solve(beta=beta, **kw); c = g.solve(beta=beta, budget=B_REF, **kw)
+        rows.append({"new_land_yield": lab, "beta": beta, "budget_bn": bn(r["total_cost_fcfa"]), "shortfall_maize_t": clean(r["shortfall_m_t"]),
+                     "maize_pct_at_central_budget": round(c["pct_target_m"], 1),
+                     "maize_extension_ha": round(sum(r["e_m"].values()))})
+save(pd.DataFrame(rows), "t20_new_land_yield.csv")
+
+# ---- t21 climate risk from observed yield variability ------------------------------------------------------------
+Pm = dfp.pivot(index="year", columns="region", values="yield")[g.REGIONS]
+yrs = [2017, 2018, 2019, 2020]
+theta_mean = np.array([(Pm.loc[t] / Pm.loc[yrs].mean()).values for t in yrs])     # relative to the 2017-2020 mean
+w_ = np.array([g.Y0_m[r] * g.S_m[r] for r in g.REGIONS])
+shock_rows = [{"year": t, "national_index": round(float((theta_mean[k] * w_).sum() / w_.sum()), 3),
+               "worst_region": g.REGIONS[int(np.argmin(theta_mean[k]))], "worst_region_index": round(float(theta_mean[k].min()), 3)}
+              for k, t in enumerate(yrs)]
+save(pd.DataFrame(shock_rows), "t21a_yield_shocks.csv")
+rows = []
+for kmult in (1, 2, 3):
+    th = np.maximum(0.2, 1 + kmult * (theta_mean - 1))
+    for mode in ("mean", "minmax"):
+        r = g.solve_robust(th, mode=mode)
+        rows.append({"shock_amplification": kmult, "program": "average year" if mode == "mean" else "worst year (min-max)",
+                     "budget_bn": bn(r["total_cost_fcfa"]), "worst_year_shortfall_maize_t": clean(r["worst_shortfall_m_t"]),
+                     "maize_extension_ha": round(sum(r["e_m"].values())), "maize_intensified_ha": round(sum(r["x_m"].values()))})
+base = g.solve()
+rows.insert(0, {"shock_amplification": 0, "program": "deterministic (central)", "budget_bn": bn(base["total_cost_fcfa"]),
+                "worst_year_shortfall_maize_t": 0, "maize_extension_ha": round(sum(base["e_m"].values())),
+                "maize_intensified_ha": round(sum(base["x_m"].values()))})
+save(pd.DataFrame(rows), "t21_climate_robust.csv")
+# deterministic plan evaluated under the worst year of each amplification
+rows = []
+for kmult in (1, 2, 3):
+    th = np.maximum(0.2, 1 + kmult * (theta_mean - 1))
+    prod = [sum(th[k][j] * (g.Y0_m[r] * g.S_m[r] + (g.Y1_m[r] - g.Y0_m[r]) * base["x_m"][r] + g.Y1_m[r] * base["e_m"][r]) for j, r in enumerate(g.REGIONS)) for k in range(len(yrs))]
+    rows.append({"shock_amplification": kmult, "worst_year_maize_t": round(min(prod)), "pct_of_target_worst_year": round(100 * min(prod) / T_M, 1)})
+save(pd.DataFrame(rows), "t21b_deterministic_plan_under_shocks.csv")
 
 # ---- t16, t17 data exploitation ---------------------------------------------------------------------------
 data_analysis.main()

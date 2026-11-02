@@ -35,3 +35,10 @@ input package (central kappa = 0.30). With `budget=B` the same program maximises
 * **Rainfed rice areas (about 125,200 ha) and the national 2020 rice base (215,101 t) are reconstructed**, not
   measured: the regional AGRISTAT rice-area table was not available. Replace them if it is found.
 * The SND30 national maize series (1,985,330 t in 2020) differs from the AGRISTAT regional total (2,087,957 t).
+
+
+## Additions: new-land yield and climate risk
+
+- `run_scenarios.py` also writes `t19` (quality of newly cultivated land), `t20` (sensitivity to rho) and `t21a/t21/t21b` (climate-robust allocation).
+- `goal_programming_model.py` gains `rho_m`/`rho_r` (new-land yield factors by crop) and `solve_robust(shocks, mode="minmax"|"mean")`, which chooses the allocation ex ante against per-year maize yield multipliers (rice deterministic).
+- The joint Monte-Carlo (t10/t10b) now draws rho in [0.6, 1]; 2016 AGRISTAT yields (flat 1.74 t/ha in five regions) are treated as imputed and excluded from the new-land and climate analyses.
